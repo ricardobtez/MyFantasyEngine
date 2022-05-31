@@ -1,0 +1,6 @@
+[submodule "subprojects/json"]
+	path = subprojects/json
+	url = https://github.com/nlohmann/json
+[submodule "subprojects/filament"]
+	path = subprojects/filament
+	url = https://github.com/google/filament
