@@ -9,31 +9,30 @@ link_args = []
 name_suffix = []
 dependencies = []
 
-# filament configuration
-cmake = import('cmake')
-filament_opts = cmake.subproject_options()
-filament_opts.set_install(false)
-filament_opts.add_cmake_defines({
-	# Add other CMake options for filament, if needed
-})
-if cpp.get_id() == 'emscripten'
-	# TODO
-else
-	# TODO
-endif
-filament_subproject = cmake.subproject('filament', options: filament_opts)
-dependencies += raylib_subproject.dependency('filament')
-
 json_subproject = subproject('json')
 dependencies += json_subproject.get_variable('nlohmann_json_dep')
 
 # General configuration
 if host_machine.system() == 'windows'
-	# TODO
+	filament_subproject = subproject('filament-windows')
+	dependencies += filament_subproject.get_variable('filament_dep')
 elif host_machine.system() == 'mac'
 	# TODO
 elif host_machine.system() == 'linux'
-	# TODO
+	# filament configuration
+	cmake = import('cmake')
+	filament_opts = cmake.subproject_options()
+	filament_opts.set_install(false)
+	filament_opts.add_cmake_defines({
+		# Add other CMake options for filament, if needed
+	})
+	if cpp.get_id() == 'emscripten'
+		# TODO
+	else
+		# TODO
+	endif
+	filament_subproject = cmake.subproject('filament', options: filament_opts)
+	dependencies += filament_subproject.dependency('filament')
 elif host_machine.system() == 'emscripten'
 	# TODO
 endif
