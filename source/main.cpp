@@ -105,7 +105,7 @@ void setup() {
 	app.ib->setBuffer(*engine,
 		IndexBuffer::BufferDescriptor(TRIANGLE_INDICES, 6, nullptr));
 
-	std::ifstream matBinary ("aiDefaultMat.inc", std::ifstream::binary);
+	std::ifstream matBinary ("assets/materials/bakedColor.filamat", std::ifstream::binary);
 	if (!matBinary) {
 		std::cout << "Error opening material" << std::endl;
 	}
@@ -129,10 +129,6 @@ void setup() {
 	delete buffer;
 
 	app.matInstance = app.mat->createInstance();
-
-	app.matInstance->setParameter("baseColor", filament::RgbType::sRGB, {0.8, 0.0, 0.0});
-	app.matInstance->setParameter("roughness", 0.2f);
-	app.matInstance->setParameter("metallic", 1.0f);
 
 	app.renderable = EntityManager::get().create();
 	RenderableManager::Builder(1)
