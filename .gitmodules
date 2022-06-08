@@ -4,9 +4,6 @@
 [submodule "subprojects/filament"]
 	path = subprojects/filament
 	url = https://github.com/google/filament
-[submodule "subprojects/SDL"]
-	path = subprojects/SDL
-	url = https://github.com/libsdl-org/SDL
 [submodule "subprojects/glfw"]
 	path = subprojects/glfw
 	url = https://github.com/glfw/glfw
