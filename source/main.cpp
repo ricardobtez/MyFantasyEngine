@@ -54,6 +54,7 @@ struct App {
 	VertexBuffer* vb;
 	IndexBuffer* ib;
 	Material* mat;
+	MaterialInstance* matInstance;
 	Skybox* skybox;
 
 	Entity camera;
@@ -127,10 +128,16 @@ void setup() {
 
 	delete buffer;
 
+	app.matInstance = app.mat->createInstance();
+
+	app.matInstance->setParameter("baseColor", filament::RgbType::sRGB, {0.8, 0.0, 0.0});
+	app.matInstance->setParameter("roughness", 0.2f);
+	app.matInstance->setParameter("metallic", 1.0f);
+
 	app.renderable = EntityManager::get().create();
 	RenderableManager::Builder(1)
 		.boundingBox({ { -1, -1, -1 }, { 1, 1, 1 } })
-		.material(0, app.mat->getDefaultInstance())
+		.material(0, app.matInstance)
 		.geometry(0, RenderableManager::PrimitiveType::TRIANGLES, app.vb, app.ib, 0, 3)
 		.culling(false)
 		.receiveShadows(false)
@@ -175,7 +182,12 @@ void mainLoop() {
 		app.renderer->endFrame();
 	}
 
+#ifdef __EMSCRIPTEN__
+	app.engine->execute()
+#else
 	std::this_thread::sleep_for(std::chrono::milliseconds(8));
+#endif
+
 }
 
 int main() {
@@ -185,7 +197,8 @@ int main() {
 	int win_w = 1280;
 	int win_h = 720;
 
-	GLFWwindow* window = glfwCreateWindow(win_w, win_h, "FilamentTest", 0, 0);
+	GLFWwindow* window = glfwCreateWindow(win_w, win_h, "My Fantasy Engine", 0, 0);
+	glfwMakeContextCurrent(window);
 
 	app.engine = Engine::create();
 
@@ -210,8 +223,6 @@ int main() {
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetCharCallback(window, charCallback);
 	glfwSetFramebufferSizeCallback(window, resizeCallback);*/
-
-	glfwMakeContextCurrent(window);
 
 	setup();
 
