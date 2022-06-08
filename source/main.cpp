@@ -20,31 +20,20 @@
 #include <filament/Viewport.h>
 
 #include <utils/EntityManager.h>
-#include <utils/Panic.h>
 
-#define SDL_MAIN_HANDLED
-#include <SDL.h>
-#include <SDL_syswm.h>
+#include <GLFW/glfw3.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#else
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#endif
+
+#include <chrono>
 #include <thread>
 #include <fstream>
-#include <chrono>
-#include<iostream>
-
-using namespace filament;
-using namespace utils;
-using namespace math;
-using namespace std;
-
-void* getNativeWindow(SDL_Window* sdlWindow) {
-	SDL_SysWMinfo wmi;
-	SDL_VERSION(&wmi.version);
-	ASSERT_POSTCONDITION(SDL_GetWindowWMInfo(sdlWindow, &wmi), "SDL version unsupported!");
-	HWND win = (HWND) wmi.info.win.window;
-	return (void*) win;
-}
-
-bool done = false;
+#include <iostream>
 
 using namespace filament;
 using utils::Entity;
@@ -94,6 +83,7 @@ void setup() {
 	app.skybox = Skybox::Builder().color({ 0.1, 0.125, 0.25, 1.0 }).build(*engine);
 	scene->setSkybox(app.skybox);
 	view->setPostProcessingEnabled(false);
+	static_assert(sizeof(Vertex) == 12, "Strange vertex size.");
 
 	app.vb = VertexBuffer::Builder()
 		.vertexCount(3)
@@ -135,6 +125,8 @@ void setup() {
 		.package(buffer, length)
 		.build(*engine);
 
+	delete buffer;
+
 	app.renderable = EntityManager::get().create();
 	RenderableManager::Builder(1)
 		.boundingBox({ { -1, -1, -1 }, { 1, 1, 1 } })
@@ -162,25 +154,7 @@ void cleanup() {
 }
 
 void mainLoop() {
-	
-	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
-		switch (event.type) {
-			case SDL_QUIT:
-				done = false;
-				break;
-
-			case SDL_KEYDOWN: {
-				switch ((int) event.key.keysym.sym) {
-					case SDLK_ESCAPE: {
-						done = false;
-						break;
-					}
-				}
-				break;
-			}
-		}
-	}
+	glfwPollEvents();
 
 	constexpr double ZOOM = 1.5f;
 	const uint32_t w = app.view->getViewport().width;
@@ -194,7 +168,7 @@ void mainLoop() {
 
 	auto& tcm = app.engine->getTransformManager();
 	tcm.setTransform(tcm.getInstance(app.renderable),
-		filament::math::mat4f::rotation(SDL_GetTicks() / 1000.0, filament::math::float3{ 0, 0, 1 }));
+		filament::math::mat4f::rotation(glfwGetTime(), filament::math::float3{ 0, 0, 1 }));
 
 	if (app.renderer->beginFrame(app.swapChain)) {
 		app.renderer->render(app.view);
@@ -205,36 +179,54 @@ void mainLoop() {
 }
 
 int main() {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		fprintf(stderr, "could not initialize sdl2: %s\n", SDL_GetError());
-		return 1;
-	}
+	glfwInit();
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-	SDL_Window* window = SDL_CreateWindow("My Fantasy Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+	int win_w = 1280;
+	int win_h = 720;
+
+	GLFWwindow* window = glfwCreateWindow(win_w, win_h, "FilamentTest", 0, 0);
 
 	app.engine = Engine::create();
-	app.swapChain = app.engine->createSwapChain(getNativeWindow(window));
+
+#ifdef __EMSCRIPTEN__
+	app.swapChain = app.engine->createSwapChain(nullptr);
+#else
+	HWND winHandle = glfwGetWin32Window(window);
+	app.swapChain = app.engine->createSwapChain(winHandle);
+#endif
 
 	app.renderer = app.engine->createRenderer();
 	app.scene = app.engine->createScene();
-	//app.cam = app.engine->createCamera();
 	app.view = app.engine->createView();
 
 	app.view->setCamera(app.cam);
 	app.view->setScene(app.scene);
-	app.view->setViewport({ 0, 0, 1280, 720});
+	app.view->setViewport({ 0, 0, uint32_t(win_w), uint32_t(win_h) });
+
+	/*glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	glfwSetCursorPosCallback(window, cursorPosCallback);
+	glfwSetScrollCallback(window, scrollCallback);
+	glfwSetKeyCallback(window, keyCallback);
+	glfwSetCharCallback(window, charCallback);
+	glfwSetFramebufferSizeCallback(window, resizeCallback);*/
+
+	glfwMakeContextCurrent(window);
 
 	setup();
 
-
-	while (!done) {
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop(mainLoop, 0, true);
+#else
+	while (!glfwWindowShouldClose(window)) {
 		mainLoop();
 	}
+#endif
 
 	cleanup();
 	Engine::destroy(&app.engine);
 
-	SDL_Quit();
+	glfwTerminate();
 
 	return 0;
 }
