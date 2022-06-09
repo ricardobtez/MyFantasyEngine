@@ -8,7 +8,7 @@
 			"program": "${workspaceFolder}\\bin\\Debug\\MyFantasyEngine.exe",
 			"args": [],
 			"stopAtEntry": false,
-			"cwd": "${workspaceFolder}\\build",
+			"cwd": "${workspaceFolder}",
 			"environment": [],
 			"externalConsole": false, //set to true to see output in cmd instead
 			"MIMode": "gdb",
@@ -28,7 +28,7 @@
 			"program": "${workspaceFolder}\\bin\\Debug\\MyFantasyEngine.exe",
 			"args": [],
 			"stopAtEntry": false,
-			"cwd": "${workspaceFolder}\\build",
+			"cwd": "${workspaceFolder}",
 			"environment": [],
 			"externalConsole": false, //set to true to see output in cmd instead
 			"MIMode": "gdb",
