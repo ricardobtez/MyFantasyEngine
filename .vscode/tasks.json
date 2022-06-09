@@ -1,0 +1,19 @@
+{
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Debug build",
+			"command": "cmake",
+			"args": [
+				"--build",
+				".",
+				"--target MyFantasyEngine",
+				"--config Debug"
+			],
+			"options": {
+			"cwd": "${workspaceFolder}\\build"
+			}
+		}
+	],
+	"version": "2.0.0"
+}
