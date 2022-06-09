@@ -1,4 +1,4 @@
-# MyFantasyEngine
+# My Fantasy Engine
 
 Pre-rendered background game engine
  
@@ -33,18 +33,17 @@ You can also use `make` instead of Ninja and \<Mode\> can either be `Release` or
 
 ## Windows
 The following dependencies are a prerequisite of building this project on Windows
-- Visual Studio 2022
+- Visual Studio 2019 or later
 - Windows 10 SDK
 - Python 3.7 or higher
 - CMake 3.14 or later
 
 After obtaining them, follow these steps 
-```
+```bash
 > mkdir build 
 > cd build 
 > cmake ..
+> cmake --build . --target MyFantasyEngine --config <Mode>
 ```
 
-Open the solution file inside visual studio and press `Ctrl + Shift + b` to initiate build process.
-
-After the build completes, select `MyFantasyEngine` as the startup project from the Solution's Settings.
+`MyFantasyEngine.exe` will be compiled to the 	`bin` folder
