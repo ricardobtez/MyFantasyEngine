@@ -8,7 +8,8 @@
 				"--build",
 				".",
 				"--target MyFantasyEngine",
-				"--config Debug"
+				"--config Debug",
+				"--parallel 8"
 			],
 			"options": {
 			"cwd": "${workspaceFolder}\\build"
