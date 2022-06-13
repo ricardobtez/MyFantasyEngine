@@ -4,6 +4,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(MyFantasyEngine)
 
+message("Build type: = ${CMAKE_BUILD_TYPE}")
+
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/source)
 
 file(GLOB_RECURSE FANTASY_ENGINE_SRCS	"${PROJECT_SOURCE_DIR}/source/*.cpp"
@@ -24,8 +26,21 @@ set(GLFW_BUILD_TESTS OFF)
 set(FILAMENT_SKIP_SAMPLES ON)
 set(FILAMENT_SKIP_SDL2 ON)
 
-if (WIN32)
-	set(FILAMENT_SUPPORTS_VULKAN OFF)
+if(EMSCRIPTEN)
+	set(WEBGL ON)
+	set(FILAMENT_DEPS	filament
+							backend
+							bluegl
+							filabridge
+							filaflat
+							utils
+							geometry
+							ibl
+							filameshio
+							image
+							ktxreader)
+elseif(WIN32)
+	set(FILAMENT_SUPPORTS_VULKAN ON)
 	set(USE_STATIC_CRT  OFF)
 	set(FILAMENT_DEPS	filament 
 						backend
@@ -40,7 +55,7 @@ if (WIN32)
 						filameshio
 						image
 						ktxreader)
-elseif (UNIX AND NOT APPLE)
+elseif(UNIX AND NOT APPLE)
 	set(FILAMENT_DEPS	filament
 						backend
 						bluegl
@@ -56,7 +71,7 @@ elseif (UNIX AND NOT APPLE)
 						image
 						ktxreader)
 else()
-	message(FATAL_ERROR "Platform not supported. Only Windows and Linux are supported")
+	message(FATAL_ERROR "Platform not supported")
 endif()
 
 

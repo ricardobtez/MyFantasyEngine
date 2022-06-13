@@ -36,3 +36,4 @@ build*/
 assets*/
 lib/
 bin/
+emsdk/
