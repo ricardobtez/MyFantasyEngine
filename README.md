@@ -50,7 +50,7 @@ Use linux to build webgl
 > mkdir build-web
 > cd build-web
 > emcmake cmake -DCMAKE_BUILD_TYPE=<Mode> -DIMPORT_EXECUTABLES_DIR=out ..
-> emcmake cmake --build
+> cmake --build .
 ```
 
 ## Windows

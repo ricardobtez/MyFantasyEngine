@@ -3,7 +3,7 @@
 #include <chrono>
 #include <GLFW/glfw3.h>
 
-#ifdef WIN32
+#ifdef MFE_PLATFORM_WIN
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #endif
@@ -28,11 +28,7 @@ void windowInit()
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-#if !USE_GL
-	printf("Not using a GL context\n");
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-#endif
 	
 	Window = glfwCreateWindow(Width, Height, WindowTitle, nullptr, nullptr);
 	if(!Window) {
@@ -41,7 +37,7 @@ void windowInit()
 		return;
 	}
 
-#ifdef WIN32
+#ifdef MFE_PLATFORM_WIN
 	// Turn on vertical screen sync under Windows.
 	// (I.e. it uses the WGL_EXT_swap_control extension)
 	//typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
@@ -57,7 +53,7 @@ void windowInit()
 void *windowGetHandle()
 {
 	void *handle = nullptr;
-#ifdef WIN32
+#ifdef MFE_PLATFORM_WIN
 	handle = (HWND) glfwGetWin32Window(Window);
 #endif
 	
@@ -73,7 +69,9 @@ void windowClose()
 void windowLoop()
 {
 	glfwPollEvents();
+#ifndef MFE_PLATFORM_WEB
 	std::this_thread::sleep_for(std::chrono::milliseconds(8));
+#endif
 }
 
 bool windowShouldClose()

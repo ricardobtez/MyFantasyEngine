@@ -96,13 +96,12 @@ void filamentStop()
 
 void filamentLoop()
 {
-	if (Renderer->beginFrame(SwapChain)) 
-	{
+	if (Renderer->beginFrame(SwapChain)) {
 		Renderer->render(View);
 		Renderer->endFrame();
 	}
 
-#ifdef __EMSCRIPTEN__
+#ifdef MFE_PLATFORM_WEB
 	Engine->execute();
 #endif
 

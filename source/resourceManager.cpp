@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <fstream>
 
-#ifdef __EMSCRIPTEN__
+#ifdef MFE_PLATFORM_WEB
 #include <emscripten.h>
 #endif
 
@@ -78,7 +78,7 @@ void ResourceManager::startAsyncLoad()
 		//const Resource& r = i.second;
 		Resource* r = &resources[i.first];
 
-#ifdef __EMSCRIPTEN__
+#ifdef MFE_PLATFORM_WEB
 		// Set up the async load for each resource
 		emscripten_async_wget_data(
 			r->sourcePath.c_str(),

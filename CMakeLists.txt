@@ -82,11 +82,12 @@ add_subdirectory(subprojects/filament)
 add_subdirectory(subprojects/json)
 
 if(EMSCRIPTEN)
-	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s ALLOW_MEMORY_GROWTH=1")
+	set(GLFW_DEPS "")
+	set(CMAKE_EXECUTABLE_SUFFIX ".html")
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s TOTAL_MEMORY=32MB -s ALLOW_MEMORY_GROWTH=1 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s WASM=1")
 else()
 	add_subdirectory(subprojects/glfw)
+	set(GLFW_DEPS glfw)
 endif()
 
-
-
-target_link_libraries(MyFantasyEngine nlohmann_json::nlohmann_json ${FILAMENT_DEPS} glfw)
+target_link_libraries(MyFantasyEngine nlohmann_json::nlohmann_json ${FILAMENT_DEPS} ${GLFW_DEPS})

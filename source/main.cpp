@@ -1,10 +1,23 @@
-#define USE_GL
+/*
+	+-------------------------------------------------------------+
+	|                   My Fantasy Engine v0.1                    |
+	|            A pre-rendered background game engine            |
+	+-------------------------------------------------------------+
+*/
+
+#if defined(_WIN32)
+#define MFE_PLATFORM_WIN
+#elif defined(__EMSCRIPTEN__)
+#define MFE_PLATFORM_WEB
+#elif defined(__APPLE__)
+#define MFE_PLATFORM_MAC
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <sstream>
 
-#ifdef __EMSCRIPTEN__
+#ifdef MFE_PLATFORM_WEB
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #endif
@@ -14,11 +27,11 @@
 #include "resourceManager.h"
 
 // Some javascript is used to set the current GL context
-#ifdef __EMSCRIPTEN__
+#ifdef MFE_PLATFORM_WEB
 void registerGlContext()
 {
 	EM_ASM_INT({
-		const handle = GL.registerContext(myengine.glContext, myengine.glOptions);
+		const handle = GL.registerContext(mfe.glContext, mfe.glOptions);
 		GL.makeContextCurrent(handle);
 	});
 }
@@ -43,7 +56,7 @@ void loop()
 }
 
 
-#ifdef __EMSCRIPTEN__
+#ifdef  MFE_PLATFORM_WEB
 EM_BOOL em_mouse_callback(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData)
 {
 	static bool down = false;
@@ -79,7 +92,7 @@ EM_BOOL em_mouse_callback(int eventType, const EmscriptenMouseEvent *mouseEvent,
 #endif
 
 
-int main(int argc, char* argv[]) {
+int main() {
 
 	enum 
 	{
@@ -101,12 +114,12 @@ int main(int argc, char* argv[]) {
 	ResourceManagerMaster.addResource("Heart mesh",			"assets/models/heart.filamesh",					FILAMESH);
 
 	windowInit();
-#ifdef __EMSCRIPTEN__
-	registerGlContext();
+#ifdef MFE_PLATFORM_WEB
+	//registerGlContext();
 #endif
 	filamentInit();
 
-#ifdef __EMSCRIPTEN__
+#ifdef MFE_PLATFORM_WEB
 	emscripten_set_mousedown_callback("canvas", nullptr, true, em_mouse_callback);
 	emscripten_set_mouseup_callback("canvas", nullptr, true, em_mouse_callback);
 	emscripten_set_mousemove_callback("canvas", nullptr, true, em_mouse_callback);
@@ -114,7 +127,7 @@ int main(int argc, char* argv[]) {
 
 	ResourceManagerMaster.startAsyncLoad();
 	
-#ifdef __EMSCRIPTEN__
+#ifdef MFE_PLATFORM_WEB
 	emscripten_set_main_loop(loop, 0, 1);
 #else
 	while (!windowShouldClose()) {
