@@ -8,8 +8,9 @@ message("Build type: = ${CMAKE_BUILD_TYPE}")
 
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/source)
 
-file(GLOB_RECURSE FANTASY_ENGINE_SRCS	"${PROJECT_SOURCE_DIR}/source/*.cpp"
-										"${PROJECT_SOURCE_DIR}/source/*.h")
+file(GLOB_RECURSE FANTASY_ENGINE_SRCS	
+	"${PROJECT_SOURCE_DIR}/source/*.cpp"
+	"${PROJECT_SOURCE_DIR}/source/*.h")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -29,47 +30,50 @@ set(FILAMENT_SKIP_SDL2 ON)
 
 if(EMSCRIPTEN)
 	set(WEBGL ON)
-	set(FILAMENT_DEPS	filament
-						backend
-						filabridge
-						filaflat
-						utils
-						geometry
-						ibl
-						filameshio
-						image
-						ktxreader)
+	set(FILAMENT_DEPS	
+		filament
+		backend
+		filabridge
+		filaflat
+		utils
+		geometry
+		ibl
+		filameshio
+		image
+		ktxreader)
 elseif(WIN32)
 	set(FILAMENT_SUPPORTS_VULKAN ON)
 	set(USE_STATIC_CRT  OFF)
-	set(FILAMENT_DEPS	filament 
-						backend
-						bluegl
-						filabridge
-						filaflat
-						utils
-						geometry
-						smol-v
-						vkshaders
-						ibl
-						filameshio
-						image
-						ktxreader)
+	set(FILAMENT_DEPS	
+		filament 
+		backend
+		bluegl
+		filabridge
+		filaflat
+		utils
+		geometry
+		smol-v
+		vkshaders
+		ibl
+		filameshio
+		image
+		ktxreader)
 elseif(UNIX AND NOT APPLE)
-	set(FILAMENT_DEPS	filament
-						backend
-						bluegl
-						bluevk
-						filabridge
-						filaflat
-						utils
-						geometry
-						smol-v
-						vkshaders
-						ibl
-						filameshio
-						image
-						ktxreader)
+	set(FILAMENT_DEPS	
+		filament
+		backend
+		bluegl
+		bluevk
+		filabridge
+		filaflat
+		utils
+		geometry
+		smol-v
+		vkshaders
+		ibl
+		filameshio
+		image
+		ktxreader)
 else()
 	message(FATAL_ERROR "Platform not supported")
 endif()
