@@ -81,7 +81,7 @@ void ResourceManager::startAsyncLoad()
 #ifdef __EMSCRIPTEN__
 		// Set up the async load for each resource
 		emscripten_async_wget_data(
-			r->source_path.c_str(),
+			r->sourcePath.c_str(),
 			(void**)r,
 			&onLoad,
 			&onError

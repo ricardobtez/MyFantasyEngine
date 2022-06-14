@@ -21,6 +21,7 @@ set(JSON_BuildTests OFF)
 #GLFW settings
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS OFF)
+set(GLFW_BUILD_DOCS OFF)
 
 #Filament settings
 set(FILAMENT_SKIP_SAMPLES ON)
@@ -29,16 +30,15 @@ set(FILAMENT_SKIP_SDL2 ON)
 if(EMSCRIPTEN)
 	set(WEBGL ON)
 	set(FILAMENT_DEPS	filament
-							backend
-							bluegl
-							filabridge
-							filaflat
-							utils
-							geometry
-							ibl
-							filameshio
-							image
-							ktxreader)
+						backend
+						filabridge
+						filaflat
+						utils
+						geometry
+						ibl
+						filameshio
+						image
+						ktxreader)
 elseif(WIN32)
 	set(FILAMENT_SUPPORTS_VULKAN ON)
 	set(USE_STATIC_CRT  OFF)
@@ -74,13 +74,19 @@ else()
 	message(FATAL_ERROR "Platform not supported")
 endif()
 
-
 find_package(Threads)
 
 add_executable(MyFantasyEngine ${FANTASY_ENGINE_SRCS})
 
 add_subdirectory(subprojects/filament)
 add_subdirectory(subprojects/json)
-add_subdirectory(subprojects/glfw)
+
+if(EMSCRIPTEN)
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s ALLOW_MEMORY_GROWTH=1")
+else()
+	add_subdirectory(subprojects/glfw)
+endif()
+
+
 
 target_link_libraries(MyFantasyEngine nlohmann_json::nlohmann_json ${FILAMENT_DEPS} glfw)

@@ -9,6 +9,7 @@
 #endif
 
 #include "window.h"
+#include "filament.h"
 
 const int Width = 1280;
 const int Height = 720;
@@ -83,11 +84,11 @@ bool windowShouldClose()
 
 void windowMouseEvent(int x, int y)
 {
-static float s_a = 0;
-static float s_b = 0;
-s_a +=  0.002f * (float)x;
-s_b += -0.002f * (float)y;
-if (s_b > 1.0f) s_b = 1.0f;
-if (s_b < -1.0f) s_b = -1.0f;
-//set_camera_angle(s_a, s_b);
+	static float s_a = 0;
+	static float s_b = 0;
+	s_a +=  0.002f * (float)x;
+	s_b += -0.002f * (float)y;
+	if (s_b > 1.0f) s_b = 1.0f;
+	if (s_b < -1.0f) s_b = -1.0f;
+	setCameraAngle(s_a, s_b);
 }

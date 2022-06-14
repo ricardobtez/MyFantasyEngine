@@ -70,7 +70,7 @@ EM_BOOL em_mouse_callback(int eventType, const EmscriptenMouseEvent *mouseEvent,
 		int dy = y - mouseEvent->clientY;
 		x = mouseEvent->clientX;
 		y = mouseEvent->clientY;
-		myengine_mouse_event(dx, dy);
+		windowMouseEvent(dx, dy);
 		}
 	}
 

@@ -31,6 +31,28 @@ After installing the dependencies, following the following steps
 ```
 You can also use `make` instead of Ninja and \<Mode\> can either be `Release` or `Debug`.
 
+## WebGl
+Use linux to build webgl
+- Start by installing all dependecies for linux
+- Install emscripten following these steps
+```bash
+> cd <your chosen parent folder for the emscripten SDK>
+> git clone https://github.com/emscripten-core/emsdk.git
+> cd emsdk
+> python ./emsdk.py install latest
+> python ./emsdk.py activate latest
+> source ./emsdk_env.sh
+> export EMSDK=<your chosen home for the emscripten SDK>
+```
+- Compile the filament webgl libs with `./build.sh -p webgl release`
+- Compile MFE following these steps
+```bash
+> mkdir build-web
+> cd build-web
+> emcmake cmake -DCMAKE_BUILD_TYPE=<Mode> -DIMPORT_EXECUTABLES_DIR=out ..
+> emcmake cmake --build
+```
+
 ## Windows
 The following dependencies are a prerequisite of building this project on Windows
 - Visual Studio 2019 or later
