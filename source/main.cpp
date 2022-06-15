@@ -5,14 +5,6 @@
 	+-------------------------------------------------------------+
 */
 
-#if defined(_WIN32)
-#define MFE_PLATFORM_WIN
-#elif defined(__EMSCRIPTEN__)
-#define MFE_PLATFORM_WEB
-#elif defined(__APPLE__)
-#define MFE_PLATFORM_MAC
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <sstream>
@@ -25,18 +17,6 @@
 #include "window.h"
 #include "filament.h"
 #include "resourceManager.h"
-
-// Some javascript is used to set the current GL context
-#ifdef MFE_PLATFORM_WEB
-void registerGlContext()
-{
-	EM_ASM_INT({
-		const handle = GL.registerContext(mfe.glContext, mfe.glOptions);
-		GL.makeContextCurrent(handle);
-	});
-}
-#endif
-
 
 ResourceManager ResourceManagerMaster;
 bool MeshLoaded = false;
@@ -109,14 +89,11 @@ int main() {
 
 	ResourceManagerMaster.addResource("sky",				"assets/scenes/dungeon/default_env_skybox.ktx",	TEXTURE_KTX);
 	ResourceManagerMaster.addResource("ibl",				"assets/scenes/dungeon/default_env_ibl.ktx",	TEXTURE_KTX);
-	ResourceManagerMaster.addResource("Heart ao",			"assets/models/ao_etc.ktx",						TEXTURE_KTX);
+	//ResourceManagerMaster.addResource("Heart ao",			"assets/models/ao_etc.ktx",						TEXTURE_KTX);
 	ResourceManagerMaster.addResource("Default material",	"assets/materials/plastic.filamat",				FILAMAT);
 	ResourceManagerMaster.addResource("Heart mesh",			"assets/models/heart.filamesh",					FILAMESH);
 
 	windowInit();
-#ifdef MFE_PLATFORM_WEB
-	//registerGlContext();
-#endif
 	filamentInit();
 
 #ifdef MFE_PLATFORM_WEB

@@ -6,6 +6,19 @@ project(MyFantasyEngine)
 
 message("Build type: = ${CMAKE_BUILD_TYPE}")
 
+#Set build platform
+if(EMSCRIPTEN)
+	add_compile_definitions(MFE_PLATFORM_WEB)
+elseif(WIN32)
+	add_compile_definitions(MFE_PLATFORM_WIN)
+elseif(APPLE)
+	add_compile_definitions(MFE_PLATFORM_MAC)
+elseif(UNIX)
+	add_compile_definitions(MFE_PLATFORM_LINUX)
+else()
+	message(FATAL_ERROR "Platform not supported")
+endif()
+
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/source)
 
 file(GLOB_RECURSE FANTASY_ENGINE_SRCS	
@@ -27,7 +40,6 @@ set(GLFW_BUILD_DOCS OFF)
 #Filament settings
 set(FILAMENT_SKIP_SAMPLES ON)
 set(FILAMENT_SKIP_SDL2 ON)
-
 if(EMSCRIPTEN)
 	set(WEBGL ON)
 	set(FILAMENT_DEPS	
@@ -58,12 +70,11 @@ elseif(WIN32)
 		filameshio
 		image
 		ktxreader)
-elseif(UNIX AND NOT APPLE)
+elseif(APPLE)
 	set(FILAMENT_DEPS	
 		filament
 		backend
 		bluegl
-		bluevk
 		filabridge
 		filaflat
 		utils
@@ -74,8 +85,6 @@ elseif(UNIX AND NOT APPLE)
 		filameshio
 		image
 		ktxreader)
-else()
-	message(FATAL_ERROR "Platform not supported")
 endif()
 
 find_package(Threads)
@@ -86,9 +95,8 @@ add_subdirectory(subprojects/filament)
 add_subdirectory(subprojects/json)
 
 if(EMSCRIPTEN)
-	set(GLFW_DEPS "")
-	set(CMAKE_EXECUTABLE_SUFFIX ".html")
 	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s TOTAL_MEMORY=32MB -s ALLOW_MEMORY_GROWTH=1 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s WASM=1")
+	set(GLFW_DEPS "")
 else()
 	add_subdirectory(subprojects/glfw)
 	set(GLFW_DEPS glfw)

@@ -169,9 +169,9 @@ void onLoadFinal(ResourceManager& rm)
 					filament::TextureSampler::MagFilter::LINEAR
 					);
 
-	filament::Texture* textureAO = (filament::Texture*)rm.getResource("Heart ao"); 
+	//filament::Texture* textureAO = (filament::Texture*)rm.getResource("Heart ao"); 
 
-	materialInst->setParameter("ao", textureAO, sampler);
+	//materialInst->setParameter("ao", textureAO, sampler);
 
 	// Mesh
 	FilaMeshBuffer* meshBuffer = (FilaMeshBuffer*)rm.getResource("Heart mesh"); 
