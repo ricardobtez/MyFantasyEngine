@@ -40,51 +40,34 @@ set(GLFW_BUILD_DOCS OFF)
 #Filament settings
 set(FILAMENT_SKIP_SAMPLES ON)
 set(FILAMENT_SKIP_SDL2 ON)
+set(FILAMENT_DEPS	
+	filament
+	backend
+	filabridge
+	filaflat
+	utils
+	geometry
+	ibl
+	filameshio
+	image
+	ktxreader)
+
 if(EMSCRIPTEN)
 	set(WEBGL ON)
-	set(FILAMENT_DEPS	
-		filament
-		backend
-		filabridge
-		filaflat
-		utils
-		geometry
-		ibl
-		filameshio
-		image
-		ktxreader)
 elseif(WIN32)
-	set(FILAMENT_SUPPORTS_VULKAN ON)
-	set(USE_STATIC_CRT  OFF)
-	set(FILAMENT_DEPS	
-		filament 
-		backend
+	set(FILAMENT_SUPPORTS_VULKAN OFF)
+	set(USE_STATIC_CRT OFF)
+	list(APPEND FILAMENT_DEPS 
 		bluegl
-		filabridge
-		filaflat
-		utils
-		geometry
 		smol-v
 		vkshaders
-		ibl
-		filameshio
-		image
-		ktxreader)
+		stb)
 elseif(APPLE)
-	set(FILAMENT_DEPS	
-		filament
-		backend
+	list(APPEND FILAMENT_DEPS 
 		bluegl
-		filabridge
-		filaflat
-		utils
-		geometry
 		smol-v
 		vkshaders
-		ibl
-		filameshio
-		image
-		ktxreader)
+		stb)
 endif()
 
 find_package(Threads)
@@ -92,6 +75,7 @@ find_package(Threads)
 add_executable(MyFantasyEngine ${FANTASY_ENGINE_SRCS})
 
 add_subdirectory(subprojects/filament)
+
 add_subdirectory(subprojects/json)
 
 if(EMSCRIPTEN)

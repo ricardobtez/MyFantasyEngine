@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <thread>
-#include <chrono>
 #include <GLFW/glfw3.h>
 
 #ifdef MFE_PLATFORM_WIN
@@ -8,8 +6,11 @@
 #include <GLFW/glfw3native.h>
 #endif
 
-#include "window.h"
-#include "filament.h"
+#ifndef MFE_PLATFORM_WEB
+#include <stb_image.h>
+#endif
+
+#include "Window.h"
 
 const int Width = 1280;
 const int Height = 720;
@@ -19,11 +20,11 @@ const char* WindowTitle = "My Fantasy Engine";
 int windowGetHeight() { return Height; }
 int windowGetWidth() { return Width; }
 
-void windowInit()
+int windowInit()
 {
 	if(!glfwInit()) {
 		printf("Failed to setup glfw\n");
-		return;
+		return 0;
 	}
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -34,20 +35,27 @@ void windowInit()
 	if(!Window) {
 		printf("Failed to create window\n");
 		glfwTerminate();
-		return;
+		return 0;
 	}
 
-#ifdef MFE_PLATFORM_WIN
-	// Turn on vertical screen sync under Windows.
-	// (I.e. it uses the WGL_EXT_swap_control extension)
-	//typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
-	//PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = NULL;
-	//wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-	//if(wglSwapIntervalEXT)
-	//	wglSwapIntervalEXT(1);
+#ifndef MFE_PLATFORM_WEB
+
+	GLFWimage images[2];
+	images[0].pixels = stbi_load("logo/icon.png", &images[0].width, &images[0].height, 0, 4);
+	images[1].pixels = stbi_load("logo/icon-small.png", &images[1].width, &images[1].height, 0, 4);
+	
+	glfwSetWindowIcon(Window, 2, images);
+
+	stbi_image_free(images[0].pixels);
+	stbi_image_free(images[1].pixels);
+
+	//Turn on vsync
+	glfwSwapInterval(1);
 #endif
 
 	glfwMakeContextCurrent(Window);
+
+	return 1;
 }
 
 void *windowGetHandle()
@@ -69,24 +77,9 @@ void windowClose()
 void windowLoop()
 {
 	glfwPollEvents();
-#ifndef MFE_PLATFORM_WEB
-	std::this_thread::sleep_for(std::chrono::milliseconds(8));
-#endif
 }
 
 bool windowShouldClose()
 {
 	return glfwWindowShouldClose(Window);
-}
-
-
-void windowMouseEvent(int x, int y)
-{
-	static float s_a = 0;
-	static float s_b = 0;
-	s_a +=  0.002f * (float)x;
-	s_b += -0.002f * (float)y;
-	if (s_b > 1.0f) s_b = 1.0f;
-	if (s_b < -1.0f) s_b = -1.0f;
-	setCameraAngle(s_a, s_b);
 }
