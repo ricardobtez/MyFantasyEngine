@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="logo/icon.bmp" width="256" alt="My Fantasy Engine logo">
+	<img src="logo/wizard.svg" height="256" alt="My Fantasy Engine logo">
 	<br><em><b>Pre-rendered background game engine</b></em></br>
 </p>
 
