@@ -1,7 +1,7 @@
-# My Fantasy Engine
-
-Pre-rendered background game engine
- 
+<p align="center">
+	<img src="logo/icon.bmp" width="256" alt="My Fantasy Engine logo">
+	<br><em><b>Pre-rendered background game engine</b></em></br>
+</p>
 
 # How to build 
 
@@ -10,6 +10,21 @@ After cloning the repository, download the submodules by
 ```bash
 git submodule init
 git submodule update
+```
+
+## Windows
+The following dependencies are a prerequisite of building this project on Windows
+- Visual Studio 2019 or later
+- Windows 10 SDK
+- Python 3.7 or higher
+- CMake 3.14 or later
+
+After obtaining them, follow these steps 
+```bash
+> mkdir build 
+> cd build 
+> cmake ..
+> cmake --build . --target MyFantasyEngine --config <Mode>
 ```
 
 ## Linux
@@ -31,7 +46,7 @@ After installing the dependencies, following the following steps
 ```
 You can also use `make` instead of Ninja and \<Mode\> can either be `Release` or `Debug`.
 
-## WebGl
+## WebGL
 Use linux to build webgl
 - Start by installing all dependecies for linux
 - Install emscripten following these steps
@@ -53,19 +68,4 @@ Use linux to build webgl
 > cmake --build .
 ```
 
-## Windows
-The following dependencies are a prerequisite of building this project on Windows
-- Visual Studio 2019 or later
-- Windows 10 SDK
-- Python 3.7 or higher
-- CMake 3.14 or later
-
-After obtaining them, follow these steps 
-```bash
-> mkdir build 
-> cd build 
-> cmake ..
-> cmake --build . --target MyFantasyEngine --config <Mode>
-```
-
-`MyFantasyEngine.exe` will be compiled to the 	`bin` folder
+`MyFantasyEngine.exe` will be compiled to the `bin` folder
