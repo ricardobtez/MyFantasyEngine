@@ -91,6 +91,10 @@ void rendererStop()
 {
 	Engine->destroyCameraComponent(CameraEntity);
 	utils::EntityManager::get().destroy(CameraEntity);
+	Engine->destroy(View);
+	Engine->destroy(Scene);	
+	Engine->destroy(Renderer);
+	Engine->destroy(SwapChain);
 	filament::Engine::destroy(&Engine);
 }
 

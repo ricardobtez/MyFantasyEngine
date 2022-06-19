@@ -39,7 +39,6 @@ int windowInit()
 	}
 
 #ifndef MFE_PLATFORM_WEB
-
 	GLFWimage images[2];
 	images[0].pixels = stbi_load("logo/icon.png", &images[0].width, &images[0].height, 0, 4);
 	images[1].pixels = stbi_load("logo/icon-small.png", &images[1].width, &images[1].height, 0, 4);
@@ -48,12 +47,12 @@ int windowInit()
 
 	stbi_image_free(images[0].pixels);
 	stbi_image_free(images[1].pixels);
-
-	//Turn on vsync
-	glfwSwapInterval(1);
 #endif
 
 	glfwMakeContextCurrent(Window);
+
+	//Turn on vsync
+	glfwSwapInterval(1);
 
 	return 1;
 }
@@ -71,11 +70,13 @@ void *windowGetHandle()
 
 void windowClose()
 {
+	glfwDestroyWindow(Window);
 	glfwTerminate();
 }
 
 void windowLoop()
 {
+	glfwSwapBuffers(Window);
 	glfwPollEvents();
 }
 
