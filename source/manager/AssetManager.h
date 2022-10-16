@@ -35,6 +35,7 @@ protected:
 
 	struct Asset
 	{
+		bool loaded = false;
 		std::string sourcePath;
 		//std::string name;
 		type assetType;

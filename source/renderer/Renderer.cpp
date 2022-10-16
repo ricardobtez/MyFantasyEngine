@@ -34,6 +34,55 @@ filament::Camera* Camera;
 filament::Scene* Scene;
 utils::Entity CameraEntity;
 
+void loadScene(AssetManager& assetManager)
+{
+	// Material instance
+	filament::Material* material = (filament::Material*) assetManager.getAsset("Default material"); 
+	filament::MaterialInstance* materialInst = material->createInstance();
+
+	materialInst->setParameter("baseColor", filament::RgbType::sRGB, {0.8, 0.0, 0.0});
+	materialInst->setParameter("roughness", 0.2f);
+	materialInst->setParameter("clearCoat", 1.0f);
+	materialInst->setParameter("clearCoatRoughness", 0.3f);
+
+	// Textures
+	filament::TextureSampler sampler(
+					filament::TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
+					filament::TextureSampler::MagFilter::LINEAR
+					);
+
+	// Mesh
+	const void* meshBuffer = (void*) assetManager.getAsset("Heart mesh");
+
+	filamesh::MeshReader::MaterialRegistry materialRegistry;
+	materialRegistry.registerMaterialInstance(utils::CString("DefaultMaterial"), materialInst);
+
+	filamesh::MeshReader::Mesh mesh;
+	mesh = filamesh::MeshReader::loadMeshFromBuffer(
+		Engine,
+		meshBuffer,
+		[](void* buffer, size_t size, void* user) {},
+		nullptr,
+		materialRegistry
+		);
+
+	Scene->addEntity(mesh.renderable);
+
+	// Sky / IBL
+	filament::Texture* skytex = (filament::Texture*) assetManager.getAsset("sky"); 
+	filament::Texture* ibltex = (filament::Texture*) assetManager.getAsset("ibl"); 
+
+	filament::IndirectLight * ibl = filament::IndirectLight::Builder()
+			.reflections(ibltex)
+			.build(*Engine);
+
+	Scene->setIndirectLight(ibl);
+	ibl->setIntensity(21);
+	
+	filament::Skybox* sky = filament::Skybox::Builder().environment(skytex).build(*Engine);
+	Scene->setSkybox(sky);
+}
+
 void setCameraAngle(float a, float b)
 {
   float r = 8.f;
@@ -115,8 +164,6 @@ void rendererLoop()
 
 void* meshLoad(void* buffer, unsigned int size)
 {
-	//FilaMeshBuffer* mesh = new FilaMeshBuffer(data, data_size);
-
 	return (void*) buffer;
 }
 
@@ -139,53 +186,3 @@ void* textureLoad(void* buffer, unsigned int size)
 	
 	return (void*) texture;
 }
-
-
-// void onLoadFinal(ResourceManager& rm)
-// {
-// 	// Material instance
-// 	filament::Material* material = (filament::Material*)rm.getResource("Default material"); 
-// 	filament::MaterialInstance* materialInst = material->createInstance();
-
-// 	materialInst->setParameter("baseColor", filament::RgbType::sRGB, {0.8, 0.0, 0.0});
-// 	materialInst->setParameter("roughness", 0.2f);
-// 	materialInst->setParameter("clearCoat", 1.0f);
-// 	materialInst->setParameter("clearCoatRoughness", 0.3f);
-
-// 	// Textures
-// 	filament::TextureSampler sampler(
-// 					filament::TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
-// 					filament::TextureSampler::MagFilter::LINEAR
-// 					);
-
-// 	// Mesh
-// 	FilaMeshBuffer* meshBuffer = (FilaMeshBuffer*)rm.getResource("Heart mesh"); 
-
-// 	filamesh::MeshReader::MaterialRegistry materialRegistry;
-// 	materialRegistry.registerMaterialInstance(utils::CString("DefaultMaterial"), materialInst);
-
-// 	filamesh::MeshReader::Mesh mesh;
-// 	mesh = filamesh::MeshReader::loadMeshFromBuffer(
-// 		Engine,
-// 		meshBuffer->data,
-// 		[](void* buffer, size_t size, void* user) {},
-// 		nullptr,
-// 		materialRegistry
-// 		);
-
-// 	Scene->addEntity(mesh.renderable);
-
-// 	// Sky / IBL
-// 	filament::Texture* skytex = (filament::Texture*)rm.getResource("sky"); 
-// 	filament::Texture* ibltex = (filament::Texture*)rm.getResource("ibl"); 
-
-// 	filament::IndirectLight * ibl = filament::IndirectLight::Builder()
-// 			.reflections(ibltex)
-// 			.build(*Engine);
-
-// 	Scene->setIndirectLight(ibl);
-// 	ibl->setIntensity(21);
-	
-// 	filament::Skybox* sky = filament::Skybox::Builder().environment(skytex).build(*Engine);
-// 	Scene->setSkybox(sky);
-// }

@@ -15,6 +15,7 @@ void AssetManager::onLoaded(unsigned int handle, void* userData, void* buffer, u
 	Asset* r = (Asset*)userData;
 	printf("%s loaded\n", r->sourcePath.c_str());
 	r->handle = (*r->f)(buffer, size);
+	r->loaded = true;
 }
 
 
@@ -107,4 +108,15 @@ void AssetManager::startAsyncLoad()
 
 	}
 	printf("End async asset loading\n");
+}
+
+void* AssetManager::getAsset(const std::string& assetName)
+{
+	auto i = assets.find(assetName);
+	if (i == assets.end()) return nullptr;
+
+	if (i->second.loaded)
+		return (void*)i->second.handle;
+
+	return (void*)1;
 }
