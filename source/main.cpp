@@ -32,6 +32,7 @@ int main() {
 		FILAMESH = 0,
 		FILAMAT,
 		TEXTURE_KTX,
+		GLTF,
 	};
 
 	auto assetManager = AssetManager();
@@ -40,14 +41,15 @@ int main() {
 	std::function y = &materialLoad;
 	std::function z = &textureLoad;
 
-	assetManager.addType(FILAMESH, &x);
+	assetManager.addType(GLTF, &x);
 	assetManager.addType(FILAMAT, &y);
 	assetManager.addType(TEXTURE_KTX, &z);
 
 	assetManager.addAsset("sky",				"assets/scenes/dungeon/default_env_skybox.ktx",	TEXTURE_KTX);
 	assetManager.addAsset("ibl",				"assets/scenes/dungeon/default_env_ibl.ktx",	TEXTURE_KTX);
-	assetManager.addAsset("Default material",	"assets/materials/plastic.filamat",				FILAMAT);
-	assetManager.addAsset("Heart mesh",			"assets/models/heart.filamesh",					FILAMESH);
+	//assetManager.addAsset("Default material",	"assets/materials/plastic.filamat",				FILAMAT);
+	//assetManager.addAsset("Heart mesh",			"assets/models/heart.filamesh",					FILAMESH);
+	assetManager.addAsset("Lantern mesh",		"assets/models/lantern/lantern.glb",			GLTF);
 
 	if(!windowInit()){
 		return 1;

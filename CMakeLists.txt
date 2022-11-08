@@ -50,7 +50,8 @@ set(FILAMENT_DEPS
 	ibl
 	filameshio
 	image
-	ktxreader)
+	ktxreader
+	gltfio)
 
 if(EMSCRIPTEN)
 	set(WEBGL ON)

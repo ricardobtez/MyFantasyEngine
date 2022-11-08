@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 #include <filament/FilamentAPI.h>
 #include <filament/Engine.h>
 #include <filament/Renderer.h>
@@ -16,13 +17,23 @@
 #include <filament/LightManager.h>
 #include <filament/TextureSampler.h>
 #include <filament/IndirectLight.h>
+
 #include <math/mat3.h>
 #include <math/mat4.h>
+
 #include <utils/EntityManager.h>
 #include <utils/Path.h>
+#include <utils/NameComponentManager.h>
+
 #include <image/Ktx1Bundle.h>
 #include <ktxreader/Ktx1Reader.h>
 #include <filameshio/MeshReader.h>
+
+#include <gltfio/ResourceLoader.h>
+#include <gltfio/TextureProvider.h>
+#include <gltfio/FilamentAsset.h>
+#include <gltfio/AssetLoader.h>
+#include <gltfio/FilamentAsset.h>
 
 #include "Renderer.h"
 
@@ -34,39 +45,74 @@ filament::Camera* Camera;
 filament::Scene* Scene;
 utils::Entity CameraEntity;
 
+gltfio::AssetLoader* AssetLoader;
+utils::NameComponentManager* Names;
+gltfio::MaterialProvider* Materials;
+
+gltfio::ResourceLoader* resourceLoader = nullptr;
+gltfio::TextureProvider* stbDecoder = nullptr;
+gltfio::TextureProvider* ktxDecoder = nullptr;
+
+void loadResources( const std::string& path, gltfio::FilamentAsset* asset) {
+	// Load external textures and buffers.
+	gltfio::ResourceConfiguration configuration = {};
+	configuration.engine = Engine;
+	configuration.gltfPath = path.c_str();
+	configuration.recomputeBoundingBoxes = false;
+	configuration.ignoreBindTransform = false;
+	configuration.normalizeSkinningWeights = true;
+	if (!resourceLoader) {
+		resourceLoader = new gltfio::ResourceLoader(configuration);
+		stbDecoder = gltfio::createStbProvider(Engine);
+		ktxDecoder = gltfio::createKtx2Provider(Engine);
+		resourceLoader->addTextureProvider("image/png", stbDecoder);
+		resourceLoader->addTextureProvider("image/jpeg", stbDecoder);
+		resourceLoader->addTextureProvider("image/ktx2", ktxDecoder);
+	}
+	resourceLoader->asyncBeginLoad(asset);
+	asset->releaseSourceData();
+
+};
+
 void loadScene(AssetManager& assetManager)
 {
 	// Material instance
-	filament::Material* material = (filament::Material*) assetManager.getAsset("Default material"); 
-	filament::MaterialInstance* materialInst = material->createInstance();
+	// filament::Material* material = (filament::Material*) assetManager.getAsset("Default material"); 
+	// filament::MaterialInstance* materialInst = material->createInstance();
 
-	materialInst->setParameter("baseColor", filament::RgbType::sRGB, {0.8, 0.0, 0.0});
-	materialInst->setParameter("roughness", 0.2f);
-	materialInst->setParameter("clearCoat", 1.0f);
-	materialInst->setParameter("clearCoatRoughness", 0.3f);
+	// materialInst->setParameter("baseColor", filament::RgbType::sRGB, {0.8, 0.0, 0.0});
+	// materialInst->setParameter("roughness", 0.2f);
+	// materialInst->setParameter("clearCoat", 1.0f);
+	// materialInst->setParameter("clearCoatRoughness", 0.3f);
 
-	// Textures
-	filament::TextureSampler sampler(
-					filament::TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
-					filament::TextureSampler::MagFilter::LINEAR
-					);
+	// // Textures
+	// filament::TextureSampler sampler(
+	// 				filament::TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
+	// 				filament::TextureSampler::MagFilter::LINEAR
+	// 				);
 
-	// Mesh
-	const void* meshBuffer = (void*) assetManager.getAsset("Heart mesh");
+	// // Mesh
+	// const void* meshBuffer = (void*) assetManager.getAsset("Heart mesh");
 
-	filamesh::MeshReader::MaterialRegistry materialRegistry;
-	materialRegistry.registerMaterialInstance(utils::CString("DefaultMaterial"), materialInst);
+	// filamesh::MeshReader::MaterialRegistry materialRegistry;
+	// materialRegistry.registerMaterialInstance(utils::CString("DefaultMaterial"), materialInst);
 
-	filamesh::MeshReader::Mesh mesh;
-	mesh = filamesh::MeshReader::loadMeshFromBuffer(
-		Engine,
-		meshBuffer,
-		[](void* buffer, size_t size, void* user) {},
-		nullptr,
-		materialRegistry
-		);
+	// filamesh::MeshReader::Mesh mesh;
+	// mesh = filamesh::MeshReader::loadMeshFromBuffer(
+	// 	Engine,
+	// 	meshBuffer,
+	// 	[](void* buffer, size_t size, void* user) {},
+	// 	nullptr,
+	// 	materialRegistry
+	// 	);
 
-	Scene->addEntity(mesh.renderable);
+	// Scene->addEntity(mesh.renderable);
+
+	auto mesh = (gltfio::FilamentAsset*) assetManager.getAsset("Lantern mesh");
+
+	loadResources("", mesh);
+
+	Scene->addEntities(mesh->getRenderableEntities(), mesh->getRenderableEntityCount());
 
 	// Sky / IBL
 	filament::Texture* skytex = (filament::Texture*) assetManager.getAsset("sky"); 
@@ -81,6 +127,7 @@ void loadScene(AssetManager& assetManager)
 	
 	filament::Skybox* sky = filament::Skybox::Builder().environment(skytex).build(*Engine);
 	Scene->setSkybox(sky);
+
 }
 
 void setCameraAngle(float a, float b)
@@ -117,6 +164,10 @@ int rendererInit(void* windowHandle, const uint32_t windowWidth, const uint32_t 
 	CameraEntity = utils::EntityManager::get().create();
 	Camera = Engine->createCamera(CameraEntity);
 
+	Names = new utils::NameComponentManager(utils::EntityManager::get());
+	Materials = gltfio::createUbershaderLoader(Engine);
+	AssetLoader = gltfio::AssetLoader::create({Engine, Materials, Names });
+
 	Camera->setExposure(16.0f, 1 / 125.0f, 100.0f);
 	Camera->setExposure(100.0f);
 	Camera->setProjection(45.0f, float(windowWidth)/windowHeight, 0.1f, 100.0f);
@@ -131,6 +182,8 @@ int rendererInit(void* windowHandle, const uint32_t windowWidth, const uint32_t 
 		.clearColor = { 0.0f, 0.13f, 0.0f, 1.0f },
 		.clear = true
 	});
+
+
 
 	return 1;
 }
@@ -164,7 +217,10 @@ void rendererLoop()
 
 void* meshLoad(void* buffer, unsigned int size)
 {
-	return (void*) buffer;
+	gltfio::FilamentAsset* mesh;
+	mesh = AssetLoader->createAssetFromBinary((uint8_t*) buffer, size);
+
+	return (void*) mesh;
 }
 
 
