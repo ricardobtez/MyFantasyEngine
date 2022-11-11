@@ -45,31 +45,30 @@ filament::Camera* Camera;
 filament::Scene* Scene;
 utils::Entity CameraEntity;
 
-gltfio::AssetLoader* AssetLoader;
+filament::gltfio::AssetLoader* AssetLoader;
 utils::NameComponentManager* Names;
-gltfio::MaterialProvider* Materials;
+filament::gltfio::MaterialProvider* Materials;
 
-gltfio::ResourceLoader* resourceLoader = nullptr;
-gltfio::TextureProvider* stbDecoder = nullptr;
-gltfio::TextureProvider* ktxDecoder = nullptr;
+filament::gltfio::ResourceLoader* resourceLoader = nullptr;
+filament::gltfio::TextureProvider* stbDecoder = nullptr;
+filament::gltfio::TextureProvider* ktxDecoder = nullptr;
 
-void loadResources( const std::string& path, gltfio::FilamentAsset* asset) {
+void loadResources( const std::string& path, filament::gltfio::FilamentAsset* asset) {
 	// Load external textures and buffers.
-	gltfio::ResourceConfiguration configuration = {};
+	filament::gltfio::ResourceConfiguration configuration = {};
 	configuration.engine = Engine;
 	configuration.gltfPath = path.c_str();
-	configuration.recomputeBoundingBoxes = false;
-	configuration.ignoreBindTransform = false;
 	configuration.normalizeSkinningWeights = true;
+
 	if (!resourceLoader) {
-		resourceLoader = new gltfio::ResourceLoader(configuration);
-		stbDecoder = gltfio::createStbProvider(Engine);
-		ktxDecoder = gltfio::createKtx2Provider(Engine);
+		resourceLoader = new filament::gltfio::ResourceLoader(configuration);
+		stbDecoder = filament::gltfio::createStbProvider(Engine);
+		ktxDecoder = filament::gltfio::createKtx2Provider(Engine);
 		resourceLoader->addTextureProvider("image/png", stbDecoder);
 		resourceLoader->addTextureProvider("image/jpeg", stbDecoder);
 		resourceLoader->addTextureProvider("image/ktx2", ktxDecoder);
 	}
-	resourceLoader->asyncBeginLoad(asset);
+	resourceLoader->loadResources(asset);
 	asset->releaseSourceData();
 
 };
@@ -108,9 +107,9 @@ void loadScene(AssetManager& assetManager)
 
 	// Scene->addEntity(mesh.renderable);
 
-	auto mesh = (gltfio::FilamentAsset*) assetManager.getAsset("Lantern mesh");
+	auto mesh = (filament::gltfio::FilamentAsset*) assetManager.getAsset("Lantern mesh");
 
-	loadResources("", mesh);
+	loadResources(".", mesh);
 
 	Scene->addEntities(mesh->getRenderableEntities(), mesh->getRenderableEntityCount());
 
@@ -165,8 +164,8 @@ int rendererInit(void* windowHandle, const uint32_t windowWidth, const uint32_t 
 	Camera = Engine->createCamera(CameraEntity);
 
 	Names = new utils::NameComponentManager(utils::EntityManager::get());
-	Materials = gltfio::createUbershaderLoader(Engine);
-	AssetLoader = gltfio::AssetLoader::create({Engine, Materials, Names });
+	Materials = filament::gltfio::createJitShaderProvider(Engine);
+	AssetLoader = filament::gltfio::AssetLoader::create({Engine, Materials});
 
 	Camera->setExposure(16.0f, 1 / 125.0f, 100.0f);
 	Camera->setExposure(100.0f);
@@ -217,8 +216,8 @@ void rendererLoop()
 
 void* meshLoad(void* buffer, unsigned int size)
 {
-	gltfio::FilamentAsset* mesh;
-	mesh = AssetLoader->createAssetFromBinary((uint8_t*) buffer, size);
+	filament::gltfio::FilamentAsset* mesh;
+	mesh = AssetLoader->createAsset((uint8_t*) buffer, size);
 
 	return (void*) mesh;
 }
