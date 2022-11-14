@@ -7,3 +7,6 @@
 [submodule "subprojects/glfw"]
 	path = subprojects/glfw
 	url = https://github.com/glfw/glfw
+[submodule "subprojects/libjxl"]
+	path = subprojects/libjxl
+	url = https://github.com/libjxl/libjxl

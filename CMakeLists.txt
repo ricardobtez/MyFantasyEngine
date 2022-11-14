@@ -37,6 +37,18 @@ set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_DOCS OFF)
 
+#libjxl settings
+set(JPEGXL_ENABLE_MANPAGES false)
+set(JPEGXL_ENABLE_BENCHMARK false)
+set(JPEGXL_ENABLE_EXAMPLES false)
+set(JPEGXL_BUNDLE_LIBPNG false)
+set(JPEGXL_ENABLE_JNI false)
+set(JPEGXL_ENABLE_SJPEG false)
+set(JPEGXL_ENABLE_OPENEXR false)
+set(JPEGXL_ENABLE_SKCMS false)
+set(JPEGXL_BUNDLE_SKCMS false)
+set(JPEGXL_ENABLE_TRANSCODE_JPEG false)
+
 #Filament settings
 set(FILAMENT_SKIP_SAMPLES ON)
 set(FILAMENT_SKIP_SDL2 ON)
@@ -79,6 +91,8 @@ add_subdirectory(subprojects/filament)
 
 add_subdirectory(subprojects/json)
 
+add_subdirectory(subprojects/libjxl)
+
 if(EMSCRIPTEN)
 	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s TOTAL_MEMORY=32MB -s ALLOW_MEMORY_GROWTH=1 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s WASM=1")
 	set(GLFW_DEPS "")
@@ -87,4 +101,4 @@ else()
 	set(GLFW_DEPS glfw)
 endif()
 
-target_link_libraries(MyFantasyEngine nlohmann_json::nlohmann_json ${FILAMENT_DEPS} ${GLFW_DEPS})
+target_link_libraries(MyFantasyEngine nlohmann_json::nlohmann_json jxl ${FILAMENT_DEPS} ${GLFW_DEPS})
