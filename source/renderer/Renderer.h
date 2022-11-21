@@ -11,5 +11,6 @@ void rendererLoop();
 void* meshLoad(void* data, unsigned int size);
 void* materialLoad(void* data, unsigned int size);
 void* textureLoad(void* data, unsigned int size);
+void* backgroundLoad(void* data, unsigned int size);
 
 void loadScene(AssetManager& assetManager);

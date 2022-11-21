@@ -36,6 +36,7 @@
 #include <gltfio/FilamentAsset.h>
 
 #include "Renderer.h"
+#include "input/BackgroundLoader.h"
 
 filament::Engine* Engine;
 filament::SwapChain* SwapChain;
@@ -238,6 +239,26 @@ void* textureLoad(void* buffer, unsigned int size)
 	image::Ktx1Bundle* bundle = new image::Ktx1Bundle( (const uint8_t*)buffer, size);
 
 	filament::Texture* texture = ktxreader:: Ktx1Reader::createTexture(Engine, bundle, !bundle->isCubemap());
+	
+	return (void*) texture;
+}
+
+void* backgroundLoad(void* buffer, unsigned int size)
+{
+	std::vector<uint8_t> pixels;
+	std::vector<uint8_t> icc_profile;
+	size_t width = 0, height = 0;
+	decodeJpegXlOneShot((uint8_t*) buffer, size, &pixels, &width, &height, &icc_profile))
+
+	filament::Texture* texture = filament::Texture::Builder()
+		.width(width)
+		.height(height)
+		.levels(1)
+		.format(filament::Texture::InternalFormat::RGB8)
+		.sampler(filament::Texture::Sampler::SAMPLER_2D)
+		.build(*Engine);
+	filament::Texture::PixelBufferDescriptor textureBuffer(pixels.data(), 4, filament::Texture::Format::RGB, filament::Texture::Type::UBYTE);
+	texture->setImage(*Engine, 0, std::move(textureBuffer));
 	
 	return (void*) texture;
 }

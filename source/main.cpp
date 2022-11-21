@@ -33,23 +33,28 @@ int main() {
 		FILAMAT,
 		TEXTURE_KTX,
 		GLTF,
+		JXL,
 	};
 
 	auto assetManager = AssetManager();
 
-	std::function x = &meshLoad;
-	std::function y = &materialLoad;
-	std::function z = &textureLoad;
+	std::function a = &meshLoad;
+	std::function b = &materialLoad;
+	std::function c = &textureLoad;
+	std::function d = &backgroundLoad;
 
-	assetManager.addType(GLTF, &x);
-	assetManager.addType(FILAMAT, &y);
-	assetManager.addType(TEXTURE_KTX, &z);
+
+	assetManager.addType(GLTF, &a);
+	assetManager.addType(FILAMAT, &b);
+	assetManager.addType(TEXTURE_KTX, &c);
+	assetManager.addType(JXL, &d);
 
 	assetManager.addAsset("sky",				"assets/scenes/dungeon/default_env_skybox.ktx",	TEXTURE_KTX);
 	assetManager.addAsset("ibl",				"assets/scenes/dungeon/default_env_ibl.ktx",	TEXTURE_KTX);
 	//assetManager.addAsset("Default material",	"assets/materials/plastic.filamat",				FILAMAT);
 	//assetManager.addAsset("Heart mesh",			"assets/models/heart.filamesh",					FILAMESH);
 	assetManager.addAsset("Lantern mesh",		"assets/models/lantern/lantern.glb",			GLTF);
+	assetManager.addAsset("Test background",	"assets/scenes/dungeon/background.jxl",			JXL);
 
 	if(!windowInit()){
 		return 1;
