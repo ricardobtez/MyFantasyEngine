@@ -248,9 +248,7 @@ void* backgroundLoad(void* buffer, unsigned int size)
 	auto pixelBuffer = new std::vector<uint8_t>;
 	std::vector<uint8_t> icc_profile;
 	size_t width = 0, height = 0;
-	if(!decodeJpegXlOneShot((uint8_t*) buffer, size, pixelBuffer, &width, &height, &icc_profile)) {
-		printf("uh oh\n");
-	}
+	decodeJpegXlOneShot((uint8_t*) buffer, size, pixelBuffer, &width, &height, &icc_profile);
 
 	filament::Texture::PixelBufferDescriptor::Callback freeCallback = [](void* buf, size_t, void* data) {
 		delete reinterpret_cast<std::vector<uint8_t>*>(data);

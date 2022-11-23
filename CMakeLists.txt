@@ -38,6 +38,7 @@ set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_DOCS OFF)
 
 #libjxl settings
+set(JXL_DEPS jxl jxl_threads)
 set(JPEGXL_STATIC ON)
 set(JPEGXL_ENABLE_MANPAGES OFF)
 set(JPEGXL_ENABLE_BENCHMARK OFF)
@@ -103,4 +104,4 @@ else()
 	set(GLFW_DEPS glfw)
 endif()
 
-target_link_libraries(MyFantasyEngine nlohmann_json::nlohmann_json jxl ${FILAMENT_DEPS} ${GLFW_DEPS})
+target_link_libraries(MyFantasyEngine nlohmann_json::nlohmann_json ${JXL_DEPS} ${FILAMENT_DEPS} ${GLFW_DEPS})
