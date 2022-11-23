@@ -245,10 +245,18 @@ void* textureLoad(void* buffer, unsigned int size)
 
 void* backgroundLoad(void* buffer, unsigned int size)
 {
-	std::vector<uint8_t> pixels;
+	auto pixelBuffer = new std::vector<uint8_t>;
 	std::vector<uint8_t> icc_profile;
 	size_t width = 0, height = 0;
-	decodeJpegXlOneShot((uint8_t*) buffer, size, &pixels, &width, &height, &icc_profile))
+	if(!decodeJpegXlOneShot((uint8_t*) buffer, size, pixelBuffer, &width, &height, &icc_profile)) {
+		printf("uh oh\n");
+	}
+
+	filament::Texture::PixelBufferDescriptor::Callback freeCallback = [](void* buf, size_t, void* data) {
+		delete reinterpret_cast<std::vector<uint8_t>*>(data);
+	};
+
+	filament::Texture::PixelBufferDescriptor bufferDesc(pixelBuffer->data(), pixelBuffer->size() * sizeof(uint8_t), filament::Texture::Format::RGB, filament::Texture::Type::UBYTE, freeCallback);
 
 	filament::Texture* texture = filament::Texture::Builder()
 		.width(width)
@@ -257,8 +265,7 @@ void* backgroundLoad(void* buffer, unsigned int size)
 		.format(filament::Texture::InternalFormat::RGB8)
 		.sampler(filament::Texture::Sampler::SAMPLER_2D)
 		.build(*Engine);
-	filament::Texture::PixelBufferDescriptor textureBuffer(pixels.data(), 4, filament::Texture::Format::RGB, filament::Texture::Type::UBYTE);
-	texture->setImage(*Engine, 0, std::move(textureBuffer));
+	texture->setImage(*Engine, 0, std::move(bufferDesc));
 	
 	return (void*) texture;
 }
