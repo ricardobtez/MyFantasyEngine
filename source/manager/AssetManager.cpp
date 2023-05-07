@@ -43,7 +43,7 @@ AssetManager::~AssetManager()
 void AssetManager::addType(type type_id, callbackFunc* callback)
 {
 	printf("Adding asset type %i\n", type_id);
-	printf("Callback address %i\n", (int)callback);
+	printf("Callback address %p\n", callback);
 	callbacks.insert(std::pair<type, callbackFunc*>(type_id, callback));
 }
 
