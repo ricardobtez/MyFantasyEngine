@@ -9,4 +9,5 @@
 	url = https://github.com/glfw/glfw
 [submodule "subprojects/libjxl"]
 	path = subprojects/libjxl
-	url = https://github.com/libjxl/libjxl
+	url = https://github.com/ricardobtez/libjxl.git
+	branch = main
